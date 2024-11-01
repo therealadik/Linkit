@@ -13,7 +13,7 @@ public class LinkController {
     @Autowired
     private LinkService linkService;
 
-    @PostMapping("/link/create")
+    @PostMapping("/user/link/create")
     public ResponseEntity<String> createLink(@RequestParam String originalUrl) {
         return ResponseEntity.ok("Link created");
     }

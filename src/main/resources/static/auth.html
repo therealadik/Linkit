@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Linkit - Авторизация</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container" id="container">
+    <!-- Форма регистрации -->
+    <div class="form-container sign-up-container">
+        <form action="#">
+            <h1>Регистрация</h1>
+            <input type="text" placeholder="Имя" required/>
+            <input type="email" placeholder="Email" required/>
+            <input type="password" placeholder="Пароль" required/>
+            <button>Зарегистрироваться</button>
+            <p>Уже есть аккаунт? <a href="#" id="signIn">Войти</a></p>
+        </form>
+    </div>
+    <!-- Форма входа -->
+    <div class="form-container sign-in-container">
+        <form action="/auth" method="post">
+            <h1>Вход</h1>
+
+            <!-- Уведомление об ошибке -->
+            <p id="error-message" class="error-message" style="display: none;">
+            Неправильное имя пользователя или пароль. Пожалуйста, попробуйте снова.
+        </p>
+
+            <input type="text" name="username" placeholder="Имя пользователя" required/>
+            <input type="password" name="password" placeholder="Пароль" required/>
+            <button type="submit">Войти</button>
+            <p>Нет аккаунта? <a href="#" id="signUp">Зарегистрироваться</a></p>
+        </form>
+    </div>
+
+    <!-- Оверлей с описанием и изображениями -->
+    <div class="overlay-container">
+        <div class="overlay">
+            <!-- Панель для формы входа -->
+            <div class="overlay-panel overlay-left" id="overlay-left">
+                <h1>Привет, друг!</h1>
+                <p>Введите ваши личные данные и начните пользоваться нашим сервисом</p>
+                <button class="ghost" id="signUpOverlay">Зарегистрироваться</button>
+            </div>
+            <!-- Панель для формы регистрации -->
+            <div class="overlay-panel overlay-right" id="overlay-right">
+                <h1>Добро пожаловать обратно!</h1>
+                <p>Чтобы оставаться на связи, пожалуйста, войдите с вашей личной информацией</p>
+                <button class="ghost" id="signInOverlay">Войти</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="script.js"></script>
+<script>
+    if (window.location.search.includes("error=true")) {
+        document.getElementById("error-message").style.display = "block";
+    }
+</script>
+</body>
+</html>
