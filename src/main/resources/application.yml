@@ -10,4 +10,4 @@ spring:
       ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
 
 link:
-  lifetime: ${LINK_LIFETIME}
+  lifetime: ${LINK_LIFETIME:86400}
