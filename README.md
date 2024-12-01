@@ -14,7 +14,7 @@
 1. **Клонирование репозитория:**
 
    ```bash
-   git clone https://github.com/ваш-аккаунт/Linkit.git
+   git clone https://github.com/therealadik/Linkit.git
    cd Linkit
 
 2. **Сборка приложения с помощью Docker Compose:**
