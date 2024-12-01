@@ -12,17 +12,20 @@
 ## Установка
 
 1. **Клонирование репозитория:**
-
+   
    ```bash
    git clone https://github.com/therealadik/Linkit.git
    cd Linkit
 
-2. **Сборка приложения с помощью Docker Compose:**
+3. **Сборка приложения с помощью Docker Compose:**
+   
    ```bash
    docker-compose up --build
 
-3. **Документация API**
+5. **Документация API**
+   
    Документация API, сгенерированная с помощью Swagger, доступна по адресу: http://localhost:8080/swagger-ui/index.html
 
-4. **Доступ к приложению:**
+6. **Доступ к приложению:**
+   
    После успешного запуска приложение будет доступно по адресу: http://localhost:8080
