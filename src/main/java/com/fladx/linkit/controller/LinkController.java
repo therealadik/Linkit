@@ -1,20 +1,29 @@
 package com.fladx.linkit.controller;
 
+import com.fladx.linkit.dto.CreateLinkRequest;
+import com.fladx.linkit.model.Link;
 import com.fladx.linkit.service.LinkService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class LinkController {
 
-    @Autowired
-    private LinkService linkService;
+    private final LinkService linkService;
 
-    @PostMapping("/user/link/create")
-    public ResponseEntity<String> createLink(@RequestParam String originalUrl) {
-        return ResponseEntity.ok("Link created");
+    public LinkController(LinkService linkService) {
+        this.linkService = linkService;
+    }
+
+    @PostMapping("/link/create")
+    public ResponseEntity<Link> createLink(@RequestBody CreateLinkRequest createLinkRequest) {
+        var link = linkService.createLink(createLinkRequest);
+
+        return ResponseEntity.ok(link);
+    }
+
+    @GetMapping("/{shortLink}")
+    public ResponseEntity<Void> redirectLink(@PathVariable String shortLink) {
+       return linkService.redirect(shortLink);
     }
 }
