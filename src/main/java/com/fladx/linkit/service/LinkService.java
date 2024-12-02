@@ -2,6 +2,7 @@ package com.fladx.linkit.service;
 
 import com.fladx.linkit.config.LinkConfig;
 import com.fladx.linkit.dto.CreateLinkRequest;
+import com.fladx.linkit.dto.DeleteLinkDTO;
 import com.fladx.linkit.dto.EditLinkDto;
 import com.fladx.linkit.model.Link;
 import com.fladx.linkit.model.User;
@@ -9,6 +10,7 @@ import com.fladx.linkit.repository.LinkRepository;
 import com.fladx.linkit.util.LinkMapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -43,7 +45,11 @@ public class LinkService {
 
     public ResponseEntity<Void> redirect(String shortUrl) {
         Link link = getLinkByShortLink(shortUrl);
-        if (link.isLocked() == false && link.getClickCount() >= link.getLimitExceeded()) {
+
+        if (link.isLocked())
+            return ResponseEntity.status(HttpStatus.LOCKED).build();
+
+        if (link.getClickCount() >= link.getLimitExceeded()) {
             notificationService.sendNotification(link.getUserId(), "Исчерпаны лимиты перехода по ссылке");
             link.setLocked(true);
             linkRepository.save(link);
@@ -60,9 +66,6 @@ public class LinkService {
     }
 
     public Link editLink(EditLinkDto linkDto) {
-        if (linkDto.id() == null)
-            throw new RuntimeException("Отсутсвует ID ссылки");
-
         Link existingLink = linkRepository.findById(linkDto.id())
                 .orElseThrow(() -> new EntityNotFoundException("Link not found"));
 
@@ -125,5 +128,16 @@ public class LinkService {
             notificationService.sendNotification(link.getUserId(), "Ваша ссылка удалена");
             linkRepository.delete(link);
         }
+    }
+
+    public void deleteLink(@Valid DeleteLinkDTO linkDTO) {
+        Link existingLink = linkRepository.findById(linkDTO.id())
+                .orElseThrow(() -> new EntityNotFoundException("Link not found"));
+
+        if (existingLink.getUserId().equals(linkDTO.ownerUser()) == false) {
+            throw new RuntimeException("Юзер не владелец ссылки");
+        }
+
+        linkRepository.delete(existingLink);
     }
 }

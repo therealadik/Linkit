@@ -1,6 +1,7 @@
 package com.fladx.linkit.controller;
 
 import com.fladx.linkit.dto.CreateLinkRequest;
+import com.fladx.linkit.dto.DeleteLinkDTO;
 import com.fladx.linkit.dto.EditLinkDto;
 import com.fladx.linkit.model.Link;
 import com.fladx.linkit.service.LinkService;
@@ -18,7 +19,7 @@ public class LinkController {
     }
 
     @PostMapping("/link/create")
-    public ResponseEntity<Link> createLink(@RequestBody CreateLinkRequest createLinkRequest) {
+    public ResponseEntity<Link> createLink(@Valid @RequestBody CreateLinkRequest createLinkRequest) {
         var link = linkService.createLink(createLinkRequest);
         return ResponseEntity.ok(link);
     }
@@ -32,5 +33,12 @@ public class LinkController {
     @GetMapping("/{shortLink}")
     public ResponseEntity<Void> redirectLink(@PathVariable String shortLink) {
        return linkService.redirect(shortLink);
+    }
+
+    @DeleteMapping("/link")
+    public ResponseEntity<Void> deleteLink(@Valid @RequestBody DeleteLinkDTO linkDTO) {
+        linkService.deleteLink(linkDTO);
+
+        return ResponseEntity.noContent().build();
     }
 }
