@@ -1,8 +1,10 @@
 package com.fladx.linkit.controller;
 
 import com.fladx.linkit.dto.CreateLinkRequest;
+import com.fladx.linkit.dto.EditLinkDto;
 import com.fladx.linkit.model.Link;
 import com.fladx.linkit.service.LinkService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +20,12 @@ public class LinkController {
     @PostMapping("/link/create")
     public ResponseEntity<Link> createLink(@RequestBody CreateLinkRequest createLinkRequest) {
         var link = linkService.createLink(createLinkRequest);
+        return ResponseEntity.ok(link);
+    }
 
+    @PatchMapping("/link")
+    public ResponseEntity<Link> editLink(@Valid @RequestBody EditLinkDto createLinkRequest) {
+        Link link = linkService.editLink(createLinkRequest);
         return ResponseEntity.ok(link);
     }
 

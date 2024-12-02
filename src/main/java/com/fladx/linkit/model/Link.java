@@ -1,8 +1,7 @@
 package com.fladx.linkit.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -10,6 +9,9 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Link {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +29,7 @@ public class Link {
     @Column(nullable = false)
     private LocalDateTime expiredAt;
 
-    private Integer limitExceeded;
+    private int limitExceeded;
     private int clickCount = 0;
     private boolean isLocked = false;
 }

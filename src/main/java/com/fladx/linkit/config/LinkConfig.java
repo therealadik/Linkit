@@ -7,7 +7,9 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 public class LinkConfig {
-
     @Value("${link.lifetime}")
     private int lifetime;
+
+    @Value("${link.limitExceeded}")
+    private int limitExceeded;
 }

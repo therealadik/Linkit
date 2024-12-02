@@ -2,9 +2,11 @@ package com.fladx.linkit.service;
 
 import com.fladx.linkit.config.LinkConfig;
 import com.fladx.linkit.dto.CreateLinkRequest;
+import com.fladx.linkit.dto.EditLinkDto;
 import com.fladx.linkit.model.Link;
 import com.fladx.linkit.model.User;
 import com.fladx.linkit.repository.LinkRepository;
+import com.fladx.linkit.util.LinkMapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
@@ -24,12 +26,14 @@ public class LinkService {
     private final UserService userService;
     private final LinkConfig linkConfig;
     private final NotificationService notificationService;
+    private final LinkMapper linkMapper;
 
-    public LinkService(LinkRepository linkRepository, UserService userService, LinkConfig linkConfig, NotificationService notificationService) {
+    public LinkService(LinkRepository linkRepository, UserService userService, LinkConfig linkConfig, NotificationService notificationService, LinkMapper linkMapper) {
         this.linkRepository = linkRepository;
         this.userService = userService;
         this.linkConfig = linkConfig;
         this.notificationService = notificationService;
+        this.linkMapper = linkMapper;
     }
 
     public Link getLinkByShortLink(String shortLink) {
@@ -39,7 +43,7 @@ public class LinkService {
 
     public ResponseEntity<Void> redirect(String shortUrl) {
         Link link = getLinkByShortLink(shortUrl);
-        if (link.isLocked() == false && link.getLimitExceeded() != null && link.getClickCount() >= link.getLimitExceeded()) {
+        if (link.isLocked() == false && link.getClickCount() >= link.getLimitExceeded()) {
             notificationService.sendNotification(link.getUserId(), "Исчерпаны лимиты перехода по ссылке");
             link.setLocked(true);
             linkRepository.save(link);
@@ -50,9 +54,26 @@ public class LinkService {
         link.setClickCount(link.getClickCount() + 1);
         linkRepository.save(link);
 
-        return ResponseEntity.status(HttpStatus.PERMANENT_REDIRECT)
+        return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create(link.getOriginalUrl()))
                 .build();
+    }
+
+    public Link editLink(EditLinkDto linkDto) {
+        if (linkDto.id() == null)
+            throw new RuntimeException("Отсутсвует ID ссылки");
+
+        Link existingLink = linkRepository.findById(linkDto.id())
+                .orElseThrow(() -> new EntityNotFoundException("Link not found"));
+
+        if (existingLink.getUserId().equals(linkDto.ownerUser()) == false) {
+            throw new RuntimeException("Юзер не владелец ссылки");
+        }
+
+        linkMapper.updateLinkFromDTO(linkDto, existingLink);
+        linkRepository.save(existingLink);
+
+        return existingLink;
     }
 
     @Transactional
@@ -73,7 +94,12 @@ public class LinkService {
         link.setShortUrl(shortUrl);
         link.setOriginalUrl(createLinkRequest.originalUrl());
         link.setUserId(user.getId());
-        link.setLimitExceeded(createLinkRequest.limitExceeded());
+
+        if (createLinkRequest.limitExceeded() == null)
+            link.setLimitExceeded(linkConfig.getLimitExceeded());
+        else
+            link.setLimitExceeded(Math.max(createLinkRequest.limitExceeded(), linkConfig.getLimitExceeded()));
+
         link.setExpiredAt(expiredTime);
 
         linkRepository.save(link);

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: ${APP_NAME}
+    name: ${APP_NAME:Linkit}
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
@@ -11,3 +11,4 @@ spring:
 
 link:
   lifetime: ${LINK_LIFETIME:86400}
+  limitExceeded: ${LIMIT_EXCEEDED:10}
