@@ -115,7 +115,7 @@ class LinkServiceTest {
         ResponseEntity<Void> response = linkService.redirect(shortUrl);
 
         // Assert
-        Assertions.assertEquals(HttpStatus.PERMANENT_REDIRECT, response.getStatusCode());
+        Assertions.assertEquals(HttpStatus.FOUND, response.getStatusCode());
         Assertions.assertEquals("http://example.com", Objects.requireNonNull(response.getHeaders().getLocation()).toString());
         Mockito.verify(linkRepository).save(mockLink);
     }
